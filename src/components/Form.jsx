@@ -6,52 +6,50 @@ import Tooltip from 'react-bootstrap/Tooltip'
 import React from 'react'
 
 class Form extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             longURL: '',
-            preferedAlians: '',
-            generateURL: '',
+            preferedAlias: '',
+            generatedURL: '',
             loading: false,
             errors: [],
             errorMessage: {},
-            toolTopMessage: 'Copy To Clip Boar'
-        };
+            toolTipMessage: 'Copy To Clip Board'
+        }
     }
 
-    //When the user clicks submit, this will be called
-    onSubmit = async (event) => {
-        event.preventDefault(); //Prevents the page from reloading when submit is clicked
+    onSubmit = async (e) => {
+        e.preventDefault();
         this.setState({
             loading: true,
             generatedURL: ''
         })
 
         // Validate the input the user has sumbitted
-        var isFormValid = await this.validateInput()
+        let isFormValid = await this.validateInput()
         if (!isFormValid) {
             return
         }
 
         //If the user has input a prefered alias then we use it, if not, we generate one
-        //Be sure to change minilinkit.com to your domain
-        var generatedKey = nanoid(5);
-        var generatedURL = "minilinkit.com/" + generatedKey
+        let generatedKey = nanoid(5);
+        let generatedURL = `shorterlink.com/${generatedKey}`
 
         if (this.state.preferedAlias !== '') {
             generatedKey = this.state.preferedAlias
-            generatedURL = "minilinkit.com/" + this.state.preferedAlias
+            generatedURL = `shorterlink.com/${this.state.preferedAlias}`
         }
 
         const db = getDatabase();
-        set(ref(db, '/' + generatedKey), {
+        set(ref(db, `/${generatedKey}`), {
 
             generatedKey: generatedKey,
             longURL: this.state.longURL,
             preferedAlias: this.state.preferedAlias,
             generatedURL: generatedURL
 
-        }).then((result) => {
+        }).then(() => {
             this.setState({
                 generatedURL: generatedURL,
                 loading: false
@@ -70,17 +68,12 @@ class Form extends React.Component {
     //Save the content of the form as the user is typing!
     handleChange = (e) => {
         const { id, value } = e.target
-        this.setState(prevState => ({
-            ...prevState,
-            [id]: value
-        }))
+        this.setState(prevState => ({...prevState, [id]: value}))
     }
 
-
-
     validateInput = async () => {
-        var errors = [];
-        var errorMessages = this.state.errorMessage
+        let errors = [];
+        let errorMessages = this.state.errorMessage
 
         //Validate Long URL
         if (this.state.longURL.length === 0) {
@@ -101,7 +94,7 @@ class Form extends React.Component {
                 errorMessages['suggestedAlias'] = 'Spaces are not allowed in URLS';
             }
 
-            var keyExists = await this.checkKeyExists()
+            let keyExists = await this.checkKeyExists()
 
             if (keyExists.exists()) {
                 errors.push("suggestedAlias");
@@ -137,13 +130,11 @@ class Form extends React.Component {
         })
     }
 
-
-
     render() {
         return (
             <div className="container">
                 <form autoComplete="off">
-                    <h3>Mini Link It!</h3>
+                    <h3>Shorter Link!</h3>
 
                     <div className="form-group">
                         <label>Enter Your Long URL</label>
@@ -170,10 +161,10 @@ class Form extends React.Component {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="basic-url">Your Mini URL</label>
+                        <label htmlFor="basic-url">Your Shorter URL</label>
                         <div className="input-group mb-3">
                             <div className="input-group-prepend">
-                                <span className="input-group-text">minilinkit.com/</span>
+                                <span className="input-group-text">shorterlink.com/</span>
                             </div>
                             <input
                                 id="preferedAlias"
@@ -184,7 +175,7 @@ class Form extends React.Component {
                                         ? "form-control is-invalid"
                                         : "form-control"
                                 }
-                                type="text" placeholder="eg. 3fwias (Optional)"
+                                type="text" placeholder="eg. sh0rt (Optional)"
                             />
                         </div>
                         <div
@@ -205,7 +196,7 @@ class Form extends React.Component {
                                 </div> :
                                 <div>
                                     <span className="visually-hidden spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span>Mini Link It</span>
+                                    <span>Shorter Link It</span>
                                 </div>
                         }
 
@@ -230,7 +221,6 @@ class Form extends React.Component {
                                             }
                                         >
                                             <button onClick={() => this.copyToClipBoard()} data-toggle="tooltip" data-placement="top" title="Tooltip on top" className="btn btn-outline-secondary" type="button">Copy</button>
-
                                         </OverlayTrigger>
 
                                     </div>

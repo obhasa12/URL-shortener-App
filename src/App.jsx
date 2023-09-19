@@ -1,23 +1,21 @@
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
-import Form form "./components/Form"
+import Form from './components/Form'
 
 function App() {
 
   return (
-    <>
-      <div className="App">
+      <div className="App"> 
         <div className="auth-wrapper">
           <div className="auth-inner">
-            <Switch>
-              <Route exact path='/' component={Form} />
-              <Route path='/app' component={Form} />
-            </Switch>
+            <Routes>
+              <Route exact path='/' element={< Form/>} />
+              <Route path='/app' component={< Form/>} />
+            </Routes>
           </div>
         </div>
       </div>
-    </>
   )
 }
 
